@@ -11,7 +11,29 @@ namespace MadLibs
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
-      .SetBasePath
+      .SetBasePath(env.ContentRootPath)
+      .AddEnvironmentVariables();
+      Configuration = builder.Build();
+    }
+    public IConfigurationRoot Configuration { get; }
+    public void ConfigureServices(IServiceCollection services)
+    {
+      services.AddMvc();
+    }
+    public void Configure(IApplicationBuilder app)
+    {
+      app.UseDeveloperExceptionPage();
+      app.UseMvc(routes =>
+      {
+        routes.MapRoute(
+          name: "default",
+          template: "{controller=Home}/{action=Index}/{id?}");
+      });
+
+      app.Run(async (context) =>
+      {
+        await context.Response.WriteAsync("You have encountered an error, please alert the nearest authority.");
+      });
     }
   }
 }
